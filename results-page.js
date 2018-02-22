@@ -1,6 +1,6 @@
 const YELP_URL = "https://api.yelp.com/v3/businesses/";
 const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx";
-//const yelp = require('/node_modules/yelp-api');
+let yelp = require('yelp-api');
 
       function initMap() {
 
@@ -549,8 +549,8 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             let hour = d.getHours();
             let minutes = d.getMinutes()/60;
 
-            let currentTime = hour + minutes;
-            //let currentTime = 16.5;
+            //let currentTime = hour + minutes;
+            let currentTime = 16.5;
 
             let openNowResults = [];
 
@@ -604,28 +604,33 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         //const yelpAtts = GET src="https://api.yelp.com/v3/businesses/the-anchor-venice";
         //console.log(yelpAtts);
         //$.ajax()
-/*
+
         const URL = YELP_URL+openNowResults[0].yelpId;
         console.log(URL);
+        console.log(openNowResults[0].yelpId);
+        console.log(openNowResults[0].name);
 
         const settings = {
-          url: URL,
-          accessToken: YELP_API_KEY,
-          dataType: 'json',
-          type: 'GET',
-          success: renderResults(data),
+          url: `https://cors-anywhere.herokuapp.com/${URL}`,
+          headers: {
+            authorization: 'Bearer IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx',
+          },
+          //accessToken: YELP_API_KEY,
+
+          success: function(response){
+            console.log(response);
+          },
         }
 
-        const atts = $.ajax(settings);
-        console.log('yelp test');
-        console.log(atts);
+        $.ajax(settings);
 
-*/
         return openNowResults;
       }
 
+
+
       function renderResults(atts) {
-        console.log('atts');
+        console.log(atts);
       }
 
       function convertTime(time) {
