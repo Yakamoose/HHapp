@@ -1,0 +1,27 @@
+data = [
+  {
+   "name": "Brick and Mortar",
+   "address": "2435 Main St., Santa Monica, CA 90405",
+   "type": "American",
+   "happyHours": [
+      {
+         "day": [
+            1,
+            2,
+            3,
+            4,
+            5
+         ],
+         "hhStart": 12,
+         "hhEnd": 18,
+         "deals": "Drinks & Food"
+      }
+   ],
+   "deals": "",
+   "distance": "",
+   "driveTime": "",
+   "phone": "",
+   "rating": "",
+   "image": "",
+   "hhMenuLink": "http://www.brickandmortar-brg.com/happyhour"
+}];
