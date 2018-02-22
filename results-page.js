@@ -1,6 +1,5 @@
 const YELP_URL = "https://api.yelp.com/v3/businesses/";
 const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx";
-let yelp = require('yelp-api');
 
       function initMap() {
 
@@ -26,7 +25,7 @@ let yelp = require('yelp-api');
       var destinations = [
         {
         name: 'Brick + Mortar',
-        address: '2435 Main St., Santa Monica, CA 90405',
+        address: '2435 Main St, Santa Monica, CA 90405',
         type: 'American',
         happyHours: [{
           day: [1,2, 3, 4, 5],
@@ -549,8 +548,8 @@ let yelp = require('yelp-api');
             let hour = d.getHours();
             let minutes = d.getMinutes()/60;
 
-            //let currentTime = hour + minutes;
-            let currentTime = 16.5;
+            let currentTime = hour + minutes;
+            //let currentTime = 17;
 
             let openNowResults = [];
 
@@ -586,17 +585,18 @@ let yelp = require('yelp-api');
 
 
             const finalResults = getYelpAtts(openNowResults);
-
-            console.log('final results');
-            console.log(finalResults);
-
-            //Temporary display of results and some attributes
             outputDiv.innerHTML += finalResults.length + " results showing. <br>";
-            for( let j = 0; j < finalResults.length; j++) {
-                outputDiv.innerHTML += '<br>Name: '+ finalResults[j].name + '<br>Address: ' + finalResults[j].address +
-                '<br>' + finalResults[j].distance + ' mi: Driving will take ' +
-                finalResults[j].driveTime + '<br>' + 'Happy Hour ends at ' + finalResults[j].hhEnd+ '<br>';
-            }
+            //renderResults(finalResults);
+/*
+              outputDiv.innerHTML += finalResults.length + " results showing. <br>";
+              for( let j = 0; j < finalResults.length; j++) {
+                  outputDiv.innerHTML += '<br>Name: '+ finalResults[j].name + '<br>Address: ' + finalResults[j].address +
+                  '<br>' + finalResults[j].distance + ' mi: Driving will take ' +
+                  finalResults[j].driveTime + '<br>' + 'Happy Hour ends at ' + finalResults[j].hhEnd+ '<br>';
+              }
+*/
+            //Temporary display of results and some attributes
+
         });
       }
 
@@ -604,33 +604,58 @@ let yelp = require('yelp-api');
         //const yelpAtts = GET src="https://api.yelp.com/v3/businesses/the-anchor-venice";
         //console.log(yelpAtts);
         //$.ajax()
+        openNowResults.forEach(function(result) {
 
-        const URL = YELP_URL+openNowResults[0].yelpId;
-        console.log(URL);
-        console.log(openNowResults[0].yelpId);
-        console.log(openNowResults[0].name);
+          const URL = YELP_URL+result.yelpId;
 
-        const settings = {
-          url: `https://cors-anywhere.herokuapp.com/${URL}`,
-          headers: {
-            authorization: 'Bearer IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx',
-          },
-          //accessToken: YELP_API_KEY,
+          const settings = {
+            url: `https://cors-anywhere.herokuapp.com/${URL}`,
+            headers: {
+              authorization: 'Bearer IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx',
+            },
+            success: function(response){
+              result.phone = response.display_phone;
+              result.rating = response.rating;
+              result.image = response.image_url;
+              renderResults(result);
+              //compileAndSortResults(result);
+            },
+          }
 
-          success: function(response){
-            console.log(response);
-          },
-        }
-
-        $.ajax(settings);
-
+          $.ajax(settings);
+        });
         return openNowResults;
       }
 
 
+      function compileAndSortResults(result) {
+        const finalResults = {};
+        finalResults.push()
+      }
 
-      function renderResults(atts) {
-        console.log(atts);
+
+
+
+      var resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      function renderResults(finalResults) {
+        //console.log(finalResults);
+
+        //var resultsDiv = document.getElementById('results');
+      //  resultsDiv.innerHTML = '';
+      //  resultsDiv.innerHTML += finalResults.length + " results showing. <br>";
+
+            resultsDiv.innerHTML += '<br>Name: '+ finalResults.name + '  ||   Address: ' + finalResults.address +
+            '<br> Type: ' + finalResults.type + ' ||  Phone: ' + finalResults.phone + '<br> Rating: '
+            + finalResults.rating + '/5  ||  Deals: ' + finalResults.deals + '<br>' + finalResults.distance + ' mi: Driving will take ' +
+            finalResults.driveTime + '<br>Happy Hour ends at ' + finalResults.hhEnd+ ' ||  <a href="' +finalResults.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+
+
+      }
+
+
+      function displayDirections(start, end){
+        //https://developers.google.com/maps/documentation/javascript/examples/directions-simple
       }
 
       function convertTime(time) {
@@ -660,7 +685,7 @@ let yelp = require('yelp-api');
         } else {
           timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
         }
-        timeValue += (hours >= 12) ? " P.M." : " A.M.";  // get AM/PM
+        timeValue += (hours >= 12) ? " PM" : " AM";  // get AM/PM
 
         return timeValue;
       }

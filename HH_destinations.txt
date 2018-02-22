@@ -29,7 +29,7 @@ Wabi Sabi
 
 {
 name: 'Brick + Mortar',
-address: '2435 Main St., Santa Monica, CA 90405',
+address: '2435 Main St, Santa Monica, CA 90405',
 type: 'American',
 happyHours: [{
   day: [1,2, 3, 4, 5],
