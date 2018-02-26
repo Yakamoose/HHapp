@@ -611,7 +611,8 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
       function getYelpAtts(openNowResults) {
         //const finalResults = [];
 
-        openNowResults.forEach(function(result) {
+        //openNowResults.forEach(function(result) {
+        Promise.all(openNowResults.map(function(result) {
 
           const URL = YELP_URL+result.yelpId;
 
@@ -628,12 +629,45 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
               //finalResults.push(result);
             },
           }
-          $.ajax(settings);
+          return $.ajax(settings).promise();
+        })).then(function (results) {
+
+          for(let i=0; i<openNowResults.length; i++) {
+            openNowResults[i].phone = results[i].display_phone;
+            openNowResults[i].rating = results[i].rating;
+            openNowResults[i].image = results[i].image_url;
+          }
+          openNowResults.sort(function(a,b) {
+            if(a.distance < b.distance) {
+              return -1;
+            };
+            if(a.distance > b.distance) {
+              return 1
+            };
+            return 0;
+            });
+          console.log('in then');
+          console.log(openNowResults);
+          openNowResults.forEach(function(result) {
+          resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
+            '<br> Type: ' + result.type + ' ||  Phone: ' + result.phone + '<br> Rating: '
+            + result.rating + '/5  ||  Deals: ' + result.deals + '<br>' + result.distance + ' mi: Driving will take ' +
+            result.driveTime + '<br>Happy Hour ends at ' + result.hhEnd+ ' ||  <a href="' +result.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+          });
         });
+        console.log(openNowResults);
+
+      }
+
+
+        /*
+
         console.log(openNowResults);
 
 
         Promise.all(openNowResults).then(function (results) {
+          console.log(results[0].hhEnd);
+          console.log(results[0].phone);
           results.sort(function(a,b) {
             if(a.distance < b.distance) {
               return -1;
@@ -644,17 +678,31 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             return 0;
             });
           console.log(results);
-          /*
+          Promise.resolve(results).then(function(result) {
+            results.forEach(function(result) {
+            resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
+              '<br> Type: ' + result.type + ' ||  Phone: ' + result.phone + '<br> Rating: '
+              + result.rating + '/5  ||  Deals: ' + result.deals + '<br>' + result.distance + ' mi: Driving will take ' +
+              result.driveTime + '<br>Happy Hour ends at ' + result.hhEnd+ ' ||  <a href="' +result.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+            });
+          })
+
+        });
+
+
           Promise.all(results).then(function (displayResults) {
             displayResults.forEach(function(result) {
             renderResults(result);
           });
-        });   */
+        });
         results.forEach(function(result) {
+          console.log(result);
           renderResults(result);
         });
-      });
-      }
+        */
+
+
+
 
       function getOrigin() {
         var lat = localStorage.getItem('lat');
@@ -682,16 +730,20 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
       var resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = '';
 
-      function renderResults(finalResults) {
+      function renderResults(results) {
 /*        sortedResults.push(finalResults);
         console.log(sortedResults);
         if(sortedResults.length === openNowResults.length) {
           sortedResults.forEach(function(finalResults)  {}}
           */
-          resultsDiv.innerHTML += '<br>Name: '+ finalResults.name + '  ||   Address: ' + finalResults.address +
-            '<br> Type: ' + finalResults.type + ' ||  Phone: ' + finalResults.phone + '<br> Rating: '
-            + finalResults.rating + '/5  ||  Deals: ' + finalResults.deals + '<br>' + finalResults.distance + ' mi: Driving will take ' +
-            finalResults.driveTime + '<br>Happy Hour ends at ' + finalResults.hhEnd+ ' ||  <a href="' +finalResults.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+          console.log(results[0].phone);
+
+          results.forEach(function(result) {
+          resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
+            '<br> Type: ' + result.type + ' ||  Phone: ' + result.phone + '<br> Rating: '
+            + result.rating + '/5  ||  Deals: ' + result.deals + '<br>' + result.distance + ' mi: Driving will take ' +
+            result.driveTime + '<br>Happy Hour ends at ' + result.hhEnd+ ' ||  <a href="' +result.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+          });
 
 
 
