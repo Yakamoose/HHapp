@@ -2,7 +2,10 @@
   box-sizing: border-box;
 }
 
-/*----------Start Page Styling----------*/
+body {
+  margin: 0;
+
+}
 
 nav {
   background-color: #4ABDAC;
@@ -10,12 +13,12 @@ nav {
   text-align: center;
   font-family: 'Poiret One', cursive;
   color: ivory;
-  margin: 0;
-  padding: 0;
+  margin-top:0;
 }
 
 h1 {
   padding-top: 18px;
+  margin-top:0;
 }
 
 .description {

@@ -1,7 +1,7 @@
 const YELP_URL = "https://api.yelp.com/v3/businesses/";
 const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx";
 
-      function initMap() {
+
 
 
         //assign json destinations object to this file
@@ -427,30 +427,19 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         hhMenuLink: 'http://theanchorvenice.squarespace.com/happy-hour-menu-fall-2015/',
         }];
 
-
+      function initMap() {
 
 
 
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
 
-        var lat = localStorage.getItem('lat');
-        var long = localStorage.getItem('long');
-        var userAddress = localStorage.getItem('address');
-
-        if(lat === null) {
-          var origin = userAddress;
-        }
-        else {
-          var origin = lat +','+ long;
-        }
+        var origin = getOrigin();
 
         var locations = [];
         for (let i = 0; i < destinations.length; i++) {
           locations.push(destinations[i].address);
         }
-
-
 
         var destinationIcon = 'https://chart.googleapis.com/chart?' +
             'chst=d_map_pin_letter&chld=D|FF0000|000000';
@@ -493,8 +482,6 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
               return function(results, status) {
                 //console.log(status);
                 if (status === 'OK') {
-                  //console.log('result location');
-                  //console.log(results[0].geometry.location);
                   map.fitBounds(bounds.extend(results[0].geometry.location));
                   markersArray.push(new google.maps.Marker({
                     map: map,
@@ -502,9 +489,11 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
                     icon: icon
                   //  title:
                   }));
-                } else {
+                }
+                else {
                   alert('Geocode was not successful due to: ' + status);
                 }
+
               };
             };
 
@@ -513,43 +502,30 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             geocoder.geocode({'address': originList[0]},
               showGeocodedAddressOnMap(false));
               outputDiv.innerHTML += originList[0] + '<br>';
-
           }
 
-              for (var j = 0; j < results.length; j++) {
-                destinations[j].distance = results[j].distance.text;
-                destinations[j].driveTime = results[j].duration_in_traffic.text;
-              };
+         for (var j = 0; j < results.length; j++) {
+            destinations[j].distance = results[j].distance.text;
+            destinations[j].driveTime = results[j].duration_in_traffic.text;
+          };
+
+          for (let i = 0; i < destinations.length; i++) {
+            destinations[i].distance = destinations[i].distance.replace(" mi", "");
+          }
 
 
-            for (let i = 0; i < destinations.length; i++) {
-              destinations[i].distance = destinations[i].distance.replace(" mi", "");
-            }
-
-            //sort destinations by distance
-            destinations.sort(function(a,b) {
-              if(a.distance < b.distance) {
-                return -1;
-              }
-              if(a.distance > b.distance) {
-                return 1
-              }
-              return 0;
-            })
-
-            console.log('destinations');
-            console.log(destinations);
 
 
-            //create final object that has bars that have HH currently
+            //mutate object that has bars that have HH currently
             let d = new Date();
 
-            let day = d.getDay();
+            //let day = d.getDay();
+            let day = 4;
             let hour = d.getHours();
             let minutes = d.getMinutes()/60;
 
-            let currentTime = hour + minutes;
-            //let currentTime = 17;
+            //let currentTime = hour + minutes;
+            let currentTime = 16;
 
             let openNowResults = [];
 
@@ -572,7 +548,6 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             //Show openNowResults on map
             function sendToMap() {
               for (var j = 0; j < openNowResults.length; j++) {
-
                  geocoder.geocode({'address': openNowResults[j].address},
                  showGeocodedAddressOnMap(true));
               };
@@ -580,30 +555,62 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             //setTimeout(sendToMap, 1000);
             sendToMap();
 
+            if(openNowResults.length === 0) {
+              //change window to no results page
+              window.location = 'no-results.html';
+              console.log('in results output');
+            }
+
             console.log('open now');
             console.log(openNowResults);
 
 
-            const finalResults = getYelpAtts(openNowResults);
-            outputDiv.innerHTML += finalResults.length + " results showing. <br>";
-            //renderResults(finalResults);
-/*
-              outputDiv.innerHTML += finalResults.length + " results showing. <br>";
-              for( let j = 0; j < finalResults.length; j++) {
-                  outputDiv.innerHTML += '<br>Name: '+ finalResults[j].name + '<br>Address: ' + finalResults[j].address +
-                  '<br>' + finalResults[j].distance + ' mi: Driving will take ' +
-                  finalResults[j].driveTime + '<br>' + 'Happy Hour ends at ' + finalResults[j].hhEnd+ '<br>';
-              }
-*/
-            //Temporary display of results and some attributes
+            var finalResults = getYelpAtts(openNowResults);
+            let resultsEnd = finalResults;
 
+            /*
+            resultsEnd.sort(function(a,b) {
+              if(a.distance < b.distance) {
+                return -1;
+              };
+              if(a.distance > b.distance) {
+                return 1
+              };
+              return 0;
+              });
+
+*/
+            console.log('final Results');
+            console.log(resultsEnd);
+            outputDiv.innerHTML += openNowResults.length + " results showing. <br>";
+
+
+/*
+            finalResults.forEach(function(result) {
+              //renderResults(result);
+            });
+*/
+            console.log('Sorted final Results');
+            console.log(finalResults);
+/*
+            console.log(openNowResults);
+            openNowResults.forEach(function(result) {
+              //renderResults(result);
+            });
+*/
+            //renderResults(finalResults);
+
+            //const sortedFinalResults = sortResults(finalResults);
+            //});
+
+            //console.log('Sorted final Results');
+            //console.log(sortedFinalResults);
         });
       }
 
       function getYelpAtts(openNowResults) {
-        //const yelpAtts = GET src="https://api.yelp.com/v3/businesses/the-anchor-venice";
-        //console.log(yelpAtts);
-        //$.ajax()
+        //const finalResults = [];
+
         openNowResults.forEach(function(result) {
 
           const URL = YELP_URL+result.yelpId;
@@ -617,20 +624,56 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
               result.phone = response.display_phone;
               result.rating = response.rating;
               result.image = response.image_url;
-              renderResults(result);
-              //compileAndSortResults(result);
+              //renderResults(result);
+              //finalResults.push(result);
             },
           }
-
           $.ajax(settings);
         });
-        return openNowResults;
+        console.log(openNowResults);
+
+
+        Promise.all(openNowResults).then(function (results) {
+          results.sort(function(a,b) {
+            if(a.distance < b.distance) {
+              return -1;
+            };
+            if(a.distance > b.distance) {
+              return 1
+            };
+            return 0;
+            });
+          console.log(results);
+          /*
+          Promise.all(results).then(function (displayResults) {
+            displayResults.forEach(function(result) {
+            renderResults(result);
+          });
+        });   */
+        results.forEach(function(result) {
+          renderResults(result);
+        });
+      });
       }
 
+      function getOrigin() {
+        var lat = localStorage.getItem('lat');
+        var long = localStorage.getItem('long');
+        var userAddress = localStorage.getItem('address');
 
+        if(lat === null) {
+          var origin = userAddress;
+        }
+        else {
+          var origin = lat +','+ long;
+        }
+        return origin;
+      }
+
+      const sortedResults = {};
       function compileAndSortResults(result) {
-        const finalResults = {};
-        finalResults.push()
+
+        sortedResults.push(result);
       }
 
 
@@ -638,17 +681,18 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
 
       var resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = '';
+
       function renderResults(finalResults) {
-        //console.log(finalResults);
-
-        //var resultsDiv = document.getElementById('results');
-      //  resultsDiv.innerHTML = '';
-      //  resultsDiv.innerHTML += finalResults.length + " results showing. <br>";
-
-            resultsDiv.innerHTML += '<br>Name: '+ finalResults.name + '  ||   Address: ' + finalResults.address +
+/*        sortedResults.push(finalResults);
+        console.log(sortedResults);
+        if(sortedResults.length === openNowResults.length) {
+          sortedResults.forEach(function(finalResults)  {}}
+          */
+          resultsDiv.innerHTML += '<br>Name: '+ finalResults.name + '  ||   Address: ' + finalResults.address +
             '<br> Type: ' + finalResults.type + ' ||  Phone: ' + finalResults.phone + '<br> Rating: '
             + finalResults.rating + '/5  ||  Deals: ' + finalResults.deals + '<br>' + finalResults.distance + ' mi: Driving will take ' +
             finalResults.driveTime + '<br>Happy Hour ends at ' + finalResults.hhEnd+ ' ||  <a href="' +finalResults.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+
 
 
       }
