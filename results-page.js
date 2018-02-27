@@ -513,19 +513,15 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             destinations[i].distance = destinations[i].distance.replace(" mi", "");
           }
 
-
-
-
-            //mutate object that has bars that have HH currently
             let d = new Date();
 
-            //let day = d.getDay();
-            let day = 4;
+            let day = d.getDay();
+            //let day = 4;
             let hour = d.getHours();
             let minutes = d.getMinutes()/60;
 
-            //let currentTime = hour + minutes;
-            let currentTime = 16;
+            let currentTime = hour + minutes;
+            //let currentTime = 16;
 
             let openNowResults = [];
 
@@ -561,57 +557,15 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
               console.log('in results output');
             }
 
-            console.log('open now');
-            console.log(openNowResults);
-
-
-            var finalResults = getYelpAtts(openNowResults);
-            let resultsEnd = finalResults;
-
-            /*
-            resultsEnd.sort(function(a,b) {
-              if(a.distance < b.distance) {
-                return -1;
-              };
-              if(a.distance > b.distance) {
-                return 1
-              };
-              return 0;
-              });
-
-*/
-            console.log('final Results');
-            console.log(resultsEnd);
+            getYelpAtts(openNowResults);
             outputDiv.innerHTML += openNowResults.length + " results showing. <br>";
 
 
-/*
-            finalResults.forEach(function(result) {
-              //renderResults(result);
-            });
-*/
-            console.log('Sorted final Results');
-            console.log(finalResults);
-/*
-            console.log(openNowResults);
-            openNowResults.forEach(function(result) {
-              //renderResults(result);
-            });
-*/
-            //renderResults(finalResults);
-
-            //const sortedFinalResults = sortResults(finalResults);
-            //});
-
-            //console.log('Sorted final Results');
-            //console.log(sortedFinalResults);
         });
       }
 
       function getYelpAtts(openNowResults) {
-        //const finalResults = [];
 
-        //openNowResults.forEach(function(result) {
         Promise.all(openNowResults.map(function(result) {
 
           const URL = YELP_URL+result.yelpId;
@@ -621,13 +575,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             headers: {
               authorization: 'Bearer IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx',
             },
-            success: function(response){
-              result.phone = response.display_phone;
-              result.rating = response.rating;
-              result.image = response.image_url;
-              //renderResults(result);
-              //finalResults.push(result);
-            },
+            success: function(response){},
           }
           return $.ajax(settings).promise();
         })).then(function (results) {
@@ -646,62 +594,10 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             };
             return 0;
             });
-          console.log('in then');
-          console.log(openNowResults);
-          openNowResults.forEach(function(result) {
-          resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
-            '<br> Type: ' + result.type + ' ||  Phone: ' + result.phone + '<br> Rating: '
-            + result.rating + '/5  ||  Deals: ' + result.deals + '<br>' + result.distance + ' mi: Driving will take ' +
-            result.driveTime + '<br>Happy Hour ends at ' + result.hhEnd+ ' ||  <a href="' +result.hhMenuLink+'" target="_blank">HH Menu</a><br>';
-          });
-        });
-        console.log(openNowResults);
 
+          renderResults(openNowResults);
+        });
       }
-
-
-        /*
-
-        console.log(openNowResults);
-
-
-        Promise.all(openNowResults).then(function (results) {
-          console.log(results[0].hhEnd);
-          console.log(results[0].phone);
-          results.sort(function(a,b) {
-            if(a.distance < b.distance) {
-              return -1;
-            };
-            if(a.distance > b.distance) {
-              return 1
-            };
-            return 0;
-            });
-          console.log(results);
-          Promise.resolve(results).then(function(result) {
-            results.forEach(function(result) {
-            resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
-              '<br> Type: ' + result.type + ' ||  Phone: ' + result.phone + '<br> Rating: '
-              + result.rating + '/5  ||  Deals: ' + result.deals + '<br>' + result.distance + ' mi: Driving will take ' +
-              result.driveTime + '<br>Happy Hour ends at ' + result.hhEnd+ ' ||  <a href="' +result.hhMenuLink+'" target="_blank">HH Menu</a><br>';
-            });
-          })
-
-        });
-
-
-          Promise.all(results).then(function (displayResults) {
-            displayResults.forEach(function(result) {
-            renderResults(result);
-          });
-        });
-        results.forEach(function(result) {
-          console.log(result);
-          renderResults(result);
-        });
-        */
-
-
 
 
       function getOrigin() {
@@ -718,25 +614,11 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         return origin;
       }
 
-      const sortedResults = {};
-      function compileAndSortResults(result) {
-
-        sortedResults.push(result);
-      }
-
-
-
 
       var resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML = '';
 
       function renderResults(results) {
-/*        sortedResults.push(finalResults);
-        console.log(sortedResults);
-        if(sortedResults.length === openNowResults.length) {
-          sortedResults.forEach(function(finalResults)  {}}
-          */
-          console.log(results[0].phone);
 
           results.forEach(function(result) {
           resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
