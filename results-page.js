@@ -635,11 +635,11 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         let origin = getOrigin();
         for(let i=0; i<origin.length; i++) {
           origin = origin.replace(" ","+");
-          //origin = origin.replace(",","");
+          origin = origin.replace('"',"");
         }
         for(let i=0; i<end.length; i++) {
           end = end.replace(" ","+");
-          //end = end.replace(",","");
+          end = end.replace('"',"");
         }
         URL = URL+origin+"/"+end;
         return URL;
