@@ -13,39 +13,50 @@
     padding: 0;
   }
   #map {
-    align-items: right;
-    height: 50%;
-    width: 40%;
-    margin-right: 5%;
-    margin-top: 50px;
+    float: right;
+    height: 100%;
+    width: 50%;
+    position: fixed;;
+
 
   }
   #left-panel {
     float: left;
-    width: 48%;
+    width: 45%;
     padding-left: 3%;
     margin-top: 50px;
   }
   #output, #results {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   nav {
     background-color: #4ABDAC;
-    height: 10%;
+
+    height: 80px;
     text-align: center;
     font-family: 'Poiret One', cursive;
     color: ivory;
     margin-top:0;
   }
 
-  h1 {
+  h1, .title {
     padding-top: 18px;
     margin-top:0;
+    font-family: 'Poiret One', cursive;
+    color: ivory;
+    font-size: 35px;
   }
 
+  a {
+    text-decoration: none;
+    color: #4ABDAC;
+  }
+
+
+
   .container {
-    border: 1px solid black;
-    border-radius: 3px;
-    max-width: 400px;
+    padding: 10px 0px;
+    max-width: 450px;
+    border-top: 4px solid #4ABDAC;
   }

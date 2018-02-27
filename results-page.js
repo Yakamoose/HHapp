@@ -428,9 +428,6 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         }];
 
       function initMap() {
-
-
-
         var bounds = new google.maps.LatLngBounds;
         var markersArray = [];
 
@@ -441,8 +438,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
           locations.push(destinations[i].address);
         }
 
-        var destinationIcon = 'https://chart.googleapis.com/chart?' +
-            'chst=d_map_pin_letter&chld=D|FF0000|000000';
+        var destinationIcon = 'http://icons.iconarchive.com/icons/iconshock/real-vista-food/32/beer-icon.png';
         var originIcon = 'https://chart.googleapis.com/chart?' +
             'chst=d_map_pin_letter&chld=O|FFFF00|000000';
         var map = new google.maps.Map(document.getElementById('map'), {
@@ -477,7 +473,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             outputDiv.innerHTML = '';
             deleteMarkers(markersArray);
 
-            var showGeocodedAddressOnMap = function(asDestination) {
+            var showGeocodedAddressOnMap = function(asDestination, name) {
               var icon = asDestination ? destinationIcon : originIcon;
               return function(results, status) {
                 //console.log(status);
@@ -486,8 +482,8 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
                   markersArray.push(new google.maps.Marker({
                     map: map,
                     position: results[0].geometry.location,
-                    icon: icon
-                  //  title:
+                    icon: icon,
+                    title: name
                   }));
                 }
                 else {
@@ -501,7 +497,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             //Add Origin/userLocation to the map
             geocoder.geocode({'address': originList[0]},
               showGeocodedAddressOnMap(false));
-              outputDiv.innerHTML += originList[0] + '<br>';
+              outputDiv.innerHTML += 'Your location: '+originList[0] + '<br>';
           }
 
          for (var j = 0; j < results.length; j++) {
@@ -515,13 +511,13 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
 
             let d = new Date();
 
-            let day = d.getDay();
-            //let day = 4;
+            //let day = d.getDay();
+            let day = 4;
             let hour = d.getHours();
             let minutes = d.getMinutes()/60;
 
-            let currentTime = hour + minutes;
-            //let currentTime = 16;
+            //let currentTime = hour + minutes;
+            let currentTime = 18;
 
             let openNowResults = [];
 
@@ -533,19 +529,32 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
                       destination.deals = happyHour.deals;
                       destination.hhEnd = convertTime(`${happyHour.hhEnd}`);
                       openNowResults.push(destination);
-
                     }
                   };
                 })
               })
             });
 
+            openNowResults.sort(function(a,b) {
+              if(a.distance < b.distance) {
+                return -1;
+              };
+              if(a.distance > b.distance) {
+                return 1
+              };
+              return 0;
+              });
+            //limit results to 10 results
+            let finalResults = [];
+            for(let i=0; i < 10; i++) {
+              finalResults.push(openNowResults[i]);
+            }
 
             //Show openNowResults on map
             function sendToMap() {
-              for (var j = 0; j < openNowResults.length; j++) {
-                 geocoder.geocode({'address': openNowResults[j].address},
-                 showGeocodedAddressOnMap(true));
+              for (var j = 0; j < finalResults.length; j++) {
+                 geocoder.geocode({'address': finalResults[j].address},
+                 showGeocodedAddressOnMap(true, finalResults[j].name));
               };
             }
             //setTimeout(sendToMap, 1000);
@@ -558,7 +567,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             }
 
             getYelpAtts(openNowResults);
-            outputDiv.innerHTML += openNowResults.length + " results showing. <br>";
+            //outputDiv.innerHTML += openNowResults.length + " results showing. <br>";
 
 
         });
@@ -569,9 +578,9 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         Promise.all(openNowResults.map(function(result) {
 
           const URL = YELP_URL+result.yelpId;
-
+          //CORS hak `https://cors-anywhere.herokuapp.com/${URL}`
           const settings = {
-            url: `https://cors-anywhere.herokuapp.com/${URL}`,
+            url: `${URL}`,
             headers: {
               authorization: 'Bearer IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx',
             },
@@ -594,8 +603,15 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
             };
             return 0;
             });
+          let finalResults = [];
+          for(let i=0; i < 10; i++) {
+            finalResults.push(openNowResults[i]);
+          }
+          console.log(finalResults);
+          renderResults(finalResults);
+          return Promise.all(finalResults);
 
-          renderResults(openNowResults);
+
         });
       }
 
@@ -619,6 +635,8 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
       resultsDiv.innerHTML = '';
 
       function renderResults(results) {
+
+
 
           results.forEach(function(result) {
           resultsDiv.innerHTML += '<div class="container">Name: '+ result.name + '  ||   Address: ' + result.address +
@@ -692,7 +710,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
       //clear local storage
 
       function watchSubmit() {
-        $('.restart-btn').submit(event => {
+        $("a").click(event => {
           event.preventDefault();
           localStorage.removeItem('lat');
           localStorage.removeItem('long');
