@@ -580,7 +580,7 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
           const URL = YELP_URL+result.yelpId;
           //CORS hak `https://cors-anywhere.herokuapp.com/${URL}`
           const settings = {
-            url: `${URL}`,
+            url: `https://cors-anywhere.herokuapp.com/${URL}`,
             headers: {
               authorization: 'Bearer IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn1MOWP7qhcTwuwtqeg2NqIAaE12YvRSFi8KUM5icnb7rBQpN_Snsonrlo_Cu7nIz9t4WnYx',
             },
