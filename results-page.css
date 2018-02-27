@@ -13,16 +13,16 @@
     padding: 0;
   }
   #map {
-    float: right;
+    align-items: right;
     height: 50%;
     width: 40%;
     margin-right: 5%;
     margin-top: 50px;
+
   }
   #left-panel {
     float: left;
     width: 48%;
-
     padding-left: 3%;
     margin-top: 50px;
   }
@@ -42,4 +42,10 @@
   h1 {
     padding-top: 18px;
     margin-top:0;
+  }
+
+  .container {
+    border: 1px solid black;
+    border-radius: 3px;
+    max-width: 400px;
   }

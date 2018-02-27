@@ -621,19 +621,28 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
       function renderResults(results) {
 
           results.forEach(function(result) {
-          resultsDiv.innerHTML += '<br>Name: '+ result.name + '  ||   Address: ' + result.address +
+          resultsDiv.innerHTML += '<div class="container">Name: '+ result.name + '  ||   Address: ' + result.address +
             '<br> Type: ' + result.type + ' ||  Phone: ' + result.phone + '<br> Rating: '
-            + result.rating + '/5  ||  Deals: ' + result.deals + '<br>' + result.distance + ' mi: Driving will take ' +
-            result.driveTime + '<br>Happy Hour ends at ' + result.hhEnd+ ' ||  <a href="' +result.hhMenuLink+'" target="_blank">HH Menu</a><br>';
+            + result.rating + '/5  ||  Deals: <a href="' +result.hhMenuLink+'" target="_blank">' + result.deals + '</a><br>' + result.distance +
+            ' mi || <a href="'+displayDirections(result.address)+'" target="_blank">'+result.driveTime+ '</a><br>Happy Hour ends at '
+            + result.hhEnd+ '<br></div>';
           });
-
-
 
       }
 
-
-      function displayDirections(start, end){
-        //https://developers.google.com/maps/documentation/javascript/examples/directions-simple
+      function displayDirections(end){
+        let URL = "https://www.google.com/maps/dir/";
+        let origin = getOrigin();
+        for(let i=0; i<origin.length; i++) {
+          origin = origin.replace(" ","+");
+          //origin = origin.replace(",","");
+        }
+        for(let i=0; i<end.length; i++) {
+          end = end.replace(" ","+");
+          //end = end.replace(",","");
+        }
+        URL = URL+origin+"/"+end;
+        return URL;
       }
 
       function convertTime(time) {
@@ -663,8 +672,11 @@ const YELP_API_KEY = "IubXj0FpEeTn8_hgYoR2TJsFvrfFC_bj3wsetjKzdRsVQtfTH6Fx8koPxn
         } else {
           timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
         }
-        timeValue += (hours >= 12) ? " PM" : " AM";  // get AM/PM
-
+        if(hours === 24) {
+          timeValue += " AM";
+        } else {
+        timeValue += (hours >= 12 ) ? " PM" : " AM";  // get AM/PM
+        }
         return timeValue;
       }
 
